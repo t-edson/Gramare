@@ -7,7 +7,7 @@ unit grVerbo;
 {$mode objfpc}{$H+}
 interface
 uses
-    Classes, SysUtils, crt;
+    Classes, SysUtils, crt, Conjugaro;
 const
      ter1 : array[1..3,1..5] of string[4]=
               (('é‚','aste','o','amos','aron'),

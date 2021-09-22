@@ -6,24 +6,15 @@ unit grArticulo;
 {$mode objfpc}{$H+}
 interface
 uses
-  Classes, SysUtils;
-type
-  //Género del artículo
-  TGenArticulo = (
-    genArtMascul,  //Masculino
-    genArtFemen ,  //Femenino
-    genArtNeutro   //Neutro
-  );
-  //Número del artículo
-  TNumArticulo = (
-    numArtSingu,  //Singular
-    numArtPlur    //Plural
-  );
+  Classes, SysUtils, Gramatica_def;
+
+function esArticulo(cad: string;
+  out genArt: TGenero; out numArt: TNumero): boolean;
 
 implementation
 
 function esArticulo(cad: string;
-  out genArt: TGenArticulo; out numArt: TNumArticulo): boolean;
+  out genArt: TGenero; out numArt: TNumero): boolean;
 {Determina si la palabra "cad" es una artículo. De ser así, devuelve TRUE.
 En "genArt" se devuelve el género del artículo.
 En "numArt" se devuelve el número del artículo.
@@ -33,15 +24,15 @@ var
 begin
   c := UpCase(cad);
   case c of
-  'EL'       : begin genArt := genArtMascul; numArt := numArtSingu; exit(true); end;
-  'LA'       : begin genArt := genArtFemen ; numArt := numArtSingu; exit(true); end;
-  'LO'       : begin genArt := genArtNeutro; numArt := numArtSingu; exit(true); end;
-  'LOS'      : begin genArt := genArtMascul; numArt := numArtPlur ; exit(true); end;
-  'LAS'      : begin genArt := genArtFemen ; numArt := numArtPlur ; exit(true); end;
-  'UN', 'UNO': begin genArt := genArtMascul; numArt := numArtSingu; exit(true); end;
-  'UNA'      : begin genArt := genArtFemen ; numArt := numArtSingu; exit(true); end;
-  'UNOS'     : begin genArt := genArtMascul; numArt := numArtPlur ; exit(true); end;
-  'UNAS'     : begin genArt := genArtFemen ; numArt := numArtPlur ; exit(true); end;
+  'EL'       : begin genArt := genMascul; numArt := numSingu; exit(true); end;
+  'LA'       : begin genArt := genFemen ; numArt := numSingu; exit(true); end;
+  'LO'       : begin genArt := genNeutro; numArt := numSingu; exit(true); end;
+  'LOS'      : begin genArt := genMascul; numArt := numPlural; exit(true); end;
+  'LAS'      : begin genArt := genFemen ; numArt := numPlural; exit(true); end;
+  'UN', 'UNO': begin genArt := genMascul; numArt := numSingu; exit(true); end;
+  'UNA'      : begin genArt := genFemen ; numArt := numSingu; exit(true); end;
+  'UNOS'     : begin genArt := genMascul; numArt := numPlural; exit(true); end;
+  'UNAS'     : begin genArt := genFemen ; numArt := numPlural; exit(true); end;
   else exit(false);;
   end
   {Notar que no se considera las contracciones preposición+artículo: "al" "del"}

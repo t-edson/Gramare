@@ -5,7 +5,7 @@ gramaticales y estadística.
 }
 program Gramare;
 uses crt, Classes, fgl, SysUtils,
-     grVerbo, grPreposicion, grArticulo;
+     grVerbo, grPreposicion, grArticulo, grPosesivo, Gramatica_def;
 const
   oraciones: array[1..8] of string = (
     'Mi abuela me cocinó fideos con estofado.',
@@ -24,6 +24,7 @@ type
     epalSustant,  //Sustantivo
     epalArtic,    //Artículo
     epalPrepos,   //Preposición
+    epalPoses,    //Posesivo
     epalVerbo     //Verbo
   );
   //Signo de puntuación al final de la palabra
@@ -71,13 +72,6 @@ begin
    lstPal.Add(pal);
 end;
 
-{******************Programa Principal********************}
-var
-  orac: String;
-  i: Integer;
-  palabras: TPalabras;
-  pal: TPalabra;
-
 { TPalabra }
 procedure TPalabra.setText(txt0: string);
 {Asigna un valor de texto al objeto.}
@@ -93,14 +87,27 @@ var
   etiq_str: String;
 begin
   case etiq of
-  epalDescon : etiq_str := 'Desconocido';
-  epalSustant: etiq_str := 'Sustantivo';
-  epalArtic  : etiq_str := 'Artículo';
+  epalDescon : etiq_str := '???        ';
+  epalSustant: etiq_str := 'Sustantivo ';
+  epalArtic  : etiq_str := 'Artículo   ';
   epalPrepos : etiq_str := 'Preposición';
-  epalVerbo  : etiq_str := 'Verbo';
+  epalVerbo  : etiq_str := 'Verbo      ';
+  epalPoses  : etiq_str := 'Posesivo   ';
   end;
+  //Trata de fijar un ancho mínimo al texto
+  if length(txt)<10 then txt := txt + space(10-length(txt));
+  //Construye cadena
   Result := '"' + txt + '" -->' + etiq_str;
 end;
+
+var
+  orac: String;
+  i: Integer;
+  palabras: TPalabras;
+  pal: TPalabra;
+  genArt: TGenero;
+  numArt, num1, num2: TNumero;
+  pers1: TPersona;
 
 begin
    clrscr;
@@ -113,7 +120,9 @@ begin
    for pal in palabras do begin
      //write( Utf8ToAnsi(pal.txt) + ',');
      if esPreposicion(pal.txtM) then pal.etiq := epalPrepos;
-     writeln(pal.info);
+     if esArticulo(pal.txtM, genArt, numArt) then pal.etiq := epalArtic;
+     if esPosesivo(pal.txtM, num1, pers1, num2 ) then pal.etiq := epalPoses;
+     writeln( Utf8ToAnsi(pal.info) );
    end;
    writeln('');
    ReadLn;
