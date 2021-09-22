@@ -7,12 +7,14 @@ interface
 uses
   Classes, SysUtils;
 type
+
   //Modos verbales.
   TModoVerb = (
     modIndicat,     //Indicativo
     modSubjunt,     //Subjuntivo
     modImperat      //Imperativo
   );
+
   //Tiempo verbal
   TTpoVerb = (
     //Tiempos simples
@@ -28,24 +30,28 @@ type
     tpoFuturPerf,   //Futuro perfecto (abré amado, habrás amado, ...)
     tpoCondPerf     //Condicional perfecto (habría amado, habrías amado, ...)
   );
+
   //Géneros gramaticales
   TGenero = (
     genMascul,      //Masculino
     genFemen ,      //Femenino
     genNeutro       //Neutro (usado en artículos)
   );
+
   //Número
   TNumero = (
     numSingu,       //Singular
     numPlural,      //Plural
     numIndef        //Indefinido (puede ser singular o plural)
   );
+
   //Persona
   TPersona = (
     per1,          //Primera persona en singular
     per2,          //Segunda persona en singular
     per3           //Tercera persona en singular
   );
+
   //Número y persona
   TPersonaNum = (
     per1Sing,    //1ra persona singular

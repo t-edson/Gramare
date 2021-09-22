@@ -1,6 +1,6 @@
 {Unidad que implementa la identificación de preposiciones en español.
                                                   .
-                                             Creado por Tito Hinstroza: 21/09/2021
+                                             Creado por Tito Hinostroza: 21/09/2021
 }
 unit grPreposicion;
 {$mode objfpc}{$H+}

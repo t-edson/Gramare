@@ -1,12 +1,18 @@
 {Unidad que implementa la identificación de posesivos en español.
-
-                                             Creado por Tito Hinstroza: 21/09/2021
+Basado en: https://espanol.lingolia.com/es/gramatica/pronombres-y-determinantes/posesivos
+                                             Creado por Tito Hinostroza: 21/09/2021
 }
 unit grPosesivo;
 {$mode objfpc}{$H+}
 interface
 uses
   Classes, SysUtils, Gramatica_def;
+type
+  TPosesInfo = object
+    num1      : TNumero;  //Número del que posee.
+    pers1     : TPersona; //Persona del que posee.
+    num2      : Tnumero;  //Número de lo que posee.
+  end;
 
   function esPosesivo(cad: string;
     out num1: TNumero; out pers1: TPersona;  //Número y persoan del que posee.
@@ -16,7 +22,7 @@ uses
 implementation
 
 function esPosesivo(cad: string;
-  out num1: TNumero; out pers1: TPersona;  //Número y persoan del que posee.
+  out num1: TNumero; out pers1: TPersona;
   out num2: Tnumero                        //Número de lo que se posee.
   ): boolean;
 {Determina si la palabra "cad" es un posesivo. De ser así, devuelve TRUE.
@@ -33,7 +39,7 @@ begin
     num1 := numIndef ; pers1 := per3; num2 := numSingu; exit(true); end;
   'NUESTRO': begin
     num1 := numPlural; pers1 := per1; num2 := numSingu; exit(true); end;
-  'NUESTRA': begin
+  'NUESTRA': begin   //También se debería consdierar género de lo que se posee.
     num1 := numPlural; pers1 := per1; num2 := numSingu; exit(true); end;
   'VUESTRO': begin
     num1 := numPlural; pers1 := per2; num2 := numSingu; exit(true); end;

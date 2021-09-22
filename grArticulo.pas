@@ -19,11 +19,8 @@ function esArticulo(cad: string;
 En "genArt" se devuelve el género del artículo.
 En "numArt" se devuelve el número del artículo.
 }
-var
-  c: String;
 begin
-  c := UpCase(cad);
-  case c of
+  case cad of
   'EL'       : begin genArt := genMascul; numArt := numSingu; exit(true); end;
   'LA'       : begin genArt := genFemen ; numArt := numSingu; exit(true); end;
   'LO'       : begin genArt := genNeutro; numArt := numSingu; exit(true); end;

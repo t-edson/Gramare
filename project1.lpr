@@ -5,7 +5,7 @@ gramaticales y estadística.
 }
 program Gramare;
 uses crt, Classes, fgl, SysUtils,
-     grVerbo, grPreposicion, grArticulo, grPosesivo, Gramatica_def;
+     Gramatica_def, grVerbo, grPreposicion, grArticulo, grPosesivo, grPronombre;
 const
   oraciones: array[1..8] of string = (
     'Mi abuela me cocinó fideos con estofado.',
@@ -21,7 +21,8 @@ type
   //Tipos de palabra.
   TEtiqPal = (
     epalDescon,   //Desconocido
-    epalSustant,  //Sustantivo
+    epalPronomb,  //Pronombre personal
+    //epalSustant,  //Sustantivo
     epalArtic,    //Artículo
     epalPrepos,   //Preposición
     epalPoses,    //Posesivo
@@ -33,16 +34,33 @@ type
     spuComa,      //Coma
     spuPtoComa    //Punto y coma
   );
-  {Modela a una palabra.}
+
+  //Etiqueta de palabra
+
+  { TEtiquet }
+
+  TEtiquet = object
+    tipo: TEtiqPal;    //Tipo de etiqueta.
+    ptos: byte;        //Puntuación de etiqueta (certeza).
+    function info: string;
+  end;
+  TEtiquets = array[0..6] of TEtiquet;  //Solo se espera hasta 6 etiquetas.
 
   { TPalabra }
+  {Modela a una palabra.}
   TPalabra = class
-    txt : string;    //Texto de la palabra.
-    txtM: string;    //Texto en mayúscula
-    punt: TSignPunt; //Signo de puntuacíon al final de la palabra.
-    etiq: TEtiqPal;  //Tipo de palabra.
+    txt      : string;    //Texto de la palabra.
+    txtM     : string;    //Texto en mayúscula
+    puntuac  : TSignPunt; //Signo de puntuacíon al final de la palabra.
     procedure setText(txt0: string);
     function info: string;
+  public  //Manejo de etiquetas
+    etiqFinal: TEtiquet;  //Tipo final de palabra.
+    etiquets : TEtiquets; //Lista de etiquetas identificadas
+    netiqs   : byte;      //Número de etiquetas
+    procedure agregarEtiq(tipo: TEtiqPal; ptos: byte);  //Agrega una etiqueta
+  //public
+  //  constructor Create;
   end;
 
   TPalabras = specialize TFPGObjectList<TPalabra>;
@@ -72,34 +90,48 @@ begin
    lstPal.Add(pal);
 end;
 
+{ TEtiquet }
+
+function TEtiquet.info: string;
+begin
+  case tipo of
+  epalDescon : Result := '???        ';
+  //epalSustant: Result := 'Sustantivo ';
+  epalArtic  : Result := 'Artículo   ';
+  epalPrepos : Result := 'Preposición';
+  epalVerbo  : Result := 'Verbo      ';
+  epalPoses  : Result := 'Posesivo   ';
+  end;
+end;
+
 { TPalabra }
 procedure TPalabra.setText(txt0: string);
 {Asigna un valor de texto al objeto.}
 begin
   txt := txt0;
   txtM := UpCase(txt);
-  etiq := epalDescon
+  etiqFinal.tipo := epalDescon;
+  etiqFinal.ptos := 0;
 end;
 
 function TPalabra.info: string;
 {Muestra información sobre la palabra.}
-var
-  etiq_str: String;
 begin
-  case etiq of
-  epalDescon : etiq_str := '???        ';
-  epalSustant: etiq_str := 'Sustantivo ';
-  epalArtic  : etiq_str := 'Artículo   ';
-  epalPrepos : etiq_str := 'Preposición';
-  epalVerbo  : etiq_str := 'Verbo      ';
-  epalPoses  : etiq_str := 'Posesivo   ';
-  end;
   //Trata de fijar un ancho mínimo al texto
   if length(txt)<10 then txt := txt + space(10-length(txt));
   //Construye cadena
-  Result := '"' + txt + '" -->' + etiq_str;
+  Result := '"' + txt + '" -->' + etiqFinal.info;
 end;
 
+procedure TPalabra.agregarEtiq(tipo: TEtiqPal; ptos: byte);
+begin
+  etiquets[netiqs].tipo := tipo;
+  etiquets[netiqs].ptos := ptos;
+  inc(netiqs);
+end;
+
+
+// Programa principal
 var
   orac: String;
   i: Integer;
@@ -119,9 +151,9 @@ begin
    Descomponer(orac, palabras);
    for pal in palabras do begin
      //write( Utf8ToAnsi(pal.txt) + ',');
-     if esPreposicion(pal.txtM) then pal.etiq := epalPrepos;
-     if esArticulo(pal.txtM, genArt, numArt) then pal.etiq := epalArtic;
-     if esPosesivo(pal.txtM, num1, pers1, num2 ) then pal.etiq := epalPoses;
+     if esPreposicion(pal.txtM) then pal.agregarEtiq(epalPrepos, 1);
+     if esArticulo(pal.txtM, genArt, numArt) then pal.agregarEtiq(epalArtic, 1);
+     if esPosesivo(pal.txtM, num1, pers1, num2 ) then pal.agregarEtiq(epalPoses, 1);
      writeln( Utf8ToAnsi(pal.info) );
    end;
    writeln('');
