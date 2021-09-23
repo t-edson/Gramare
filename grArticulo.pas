@@ -7,29 +7,33 @@ unit grArticulo;
 interface
 uses
   Classes, SysUtils, Gramatica_def;
+type
+//Estructura con información sobr eel pronombre personal
+TArticInfo = object
+  gen      : TGenero;
+  num      : TNumero;  //Número del pronombre
+end;
 
-function esArticulo(cad: string;
-  out genArt: TGenero; out numArt: TNumero): boolean;
+function esArticulo(cad: string; out articInfo: TArticInfo): boolean;
 
 implementation
 
-function esArticulo(cad: string;
-  out genArt: TGenero; out numArt: TNumero): boolean;
+function esArticulo(cad: string; out articInfo: TArticInfo): boolean;
 {Determina si la palabra "cad" es una artículo. De ser así, devuelve TRUE.
 En "genArt" se devuelve el género del artículo.
 En "numArt" se devuelve el número del artículo.
 }
 begin
   case cad of
-  'EL'       : begin genArt := genMascul; numArt := numSingu; exit(true); end;
-  'LA'       : begin genArt := genFemen ; numArt := numSingu; exit(true); end;
-  'LO'       : begin genArt := genNeutro; numArt := numSingu; exit(true); end;
-  'LOS'      : begin genArt := genMascul; numArt := numPlural; exit(true); end;
-  'LAS'      : begin genArt := genFemen ; numArt := numPlural; exit(true); end;
-  'UN', 'UNO': begin genArt := genMascul; numArt := numSingu; exit(true); end;
-  'UNA'      : begin genArt := genFemen ; numArt := numSingu; exit(true); end;
-  'UNOS'     : begin genArt := genMascul; numArt := numPlural; exit(true); end;
-  'UNAS'     : begin genArt := genFemen ; numArt := numPlural; exit(true); end;
+  'EL'       : begin articInfo.gen := genMascul; articInfo.num:= numSingu; exit(true); end;
+  'LA'       : begin articInfo.gen := genFemen ; articInfo.num:= numSingu; exit(true); end;
+  'LO'       : begin articInfo.gen := genNeutro; articInfo.num:= numSingu; exit(true); end;
+  'LOS'      : begin articInfo.gen := genMascul; articInfo.num:= numPlural; exit(true); end;
+  'LAS'      : begin articInfo.gen := genFemen ; articInfo.num:= numPlural; exit(true); end;
+  'UN', 'UNO': begin articInfo.gen := genMascul; articInfo.num:= numSingu; exit(true); end;
+  'UNA'      : begin articInfo.gen := genFemen ; articInfo.num:= numSingu; exit(true); end;
+  'UNOS'     : begin articInfo.gen := genMascul; articInfo.num:= numPlural; exit(true); end;
+  'UNAS'     : begin articInfo.gen := genFemen ; articInfo.num:= numPlural; exit(true); end;
   else exit(false);;
   end
   {Notar que no se considera las contracciones preposición+artículo: "al" "del"}

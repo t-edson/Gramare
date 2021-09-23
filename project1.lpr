@@ -35,10 +35,8 @@ type
     spuPtoComa    //Punto y coma
   );
 
-  //Etiqueta de palabra
-
   { TEtiquet }
-
+  //Etiqueta de palabra
   TEtiquet = object
     tipo: TEtiqPal;    //Tipo de etiqueta.
     ptos: byte;        //Puntuación de etiqueta (certeza).
@@ -56,7 +54,7 @@ type
     function info: string;
   public  //Manejo de etiquetas
     etiqFinal: TEtiquet;  //Tipo final de palabra.
-    etiquets : TEtiquets; //Lista de etiquetas identificadas
+    etiquetas : TEtiquets; //Lista de etiquetas identificadas
     netiqs   : byte;      //Número de etiquetas
     procedure agregarEtiq(tipo: TEtiqPal; ptos: byte);  //Agrega una etiqueta
   //public
@@ -91,16 +89,18 @@ begin
 end;
 
 { TEtiquet }
-
 function TEtiquet.info: string;
 begin
   case tipo of
-  epalDescon : Result := '???        ';
+  epalDescon : Result := '???';
+  epalPronomb: Result := 'Pron. pers.';
   //epalSustant: Result := 'Sustantivo ';
-  epalArtic  : Result := 'Artículo   ';
+  epalArtic  : Result := 'Artículo';
   epalPrepos : Result := 'Preposición';
-  epalVerbo  : Result := 'Verbo      ';
-  epalPoses  : Result := 'Posesivo   ';
+  epalPoses  : Result := 'Posesivo';
+  epalVerbo  : Result := 'Verbo';
+  else
+    Result := '<error>';
   end;
 end;
 
@@ -116,30 +116,37 @@ end;
 
 function TPalabra.info: string;
 {Muestra información sobre la palabra.}
+var
+  txtAnchoFijo: String;
+  txtEtiquets: string;
+  i: Integer;
 begin
   //Trata de fijar un ancho mínimo al texto
-  if length(txt)<10 then txt := txt + space(10-length(txt));
-  //Construye cadena
-  Result := '"' + txt + '" -->' + etiqFinal.info;
+  if length(txt)<10 then txtAnchoFijo := txt + space(10-length(txt));
+  //Construye lista etiquetas
+  txtEtiquets := '';
+  for i:=0 to netiqs-1 do begin
+    if i=0 then txtEtiquets := etiquetas[i].info
+    else txtEtiquets += ', ' + etiquetas[i].info;
+  end;
+  Result := '"' + txtAnchoFijo + '" -->' + txtEtiquets; // etiqFinal.info;
 end;
 
 procedure TPalabra.agregarEtiq(tipo: TEtiqPal; ptos: byte);
 begin
-  etiquets[netiqs].tipo := tipo;
-  etiquets[netiqs].ptos := ptos;
+  etiquetas[netiqs].tipo := tipo;
+  etiquetas[netiqs].ptos := ptos;
   inc(netiqs);
 end;
-
 
 // Programa principal
 var
   orac: String;
-  i: Integer;
   palabras: TPalabras;
   pal: TPalabra;
-  genArt: TGenero;
-  numArt, num1, num2: TNumero;
-  pers1: TPersona;
+  pronInfo: TpronInfo;
+  posesInfo: TPosesInfo;
+  articInfo: TArticInfo;
 
 begin
    clrscr;
@@ -151,9 +158,10 @@ begin
    Descomponer(orac, palabras);
    for pal in palabras do begin
      //write( Utf8ToAnsi(pal.txt) + ',');
-     if esPreposicion(pal.txtM) then pal.agregarEtiq(epalPrepos, 1);
-     if esArticulo(pal.txtM, genArt, numArt) then pal.agregarEtiq(epalArtic, 1);
-     if esPosesivo(pal.txtM, num1, pers1, num2 ) then pal.agregarEtiq(epalPoses, 1);
+     if esArticulo(pal.txtM , articInfo) then pal.agregarEtiq(epalArtic, 1);
+     if esPronombre(pal.txtM, pronInfo)  then pal.agregarEtiq(epalPronomb, 1);
+     if esPosesivo(pal.txtM , posesInfo) then pal.agregarEtiq(epalPoses, 1);
+     if esPreposicion(pal.txtM)          then pal.agregarEtiq(epalPrepos, 1);
      writeln( Utf8ToAnsi(pal.info) );
    end;
    writeln('');
