@@ -62,6 +62,11 @@ type
     per3Plur     //3ra persona plural
   );
 
+type  //Definiciones de cadenas.
+   cad14 = string[14];
+   cad10 = string[10];
+   cad12 = string[12];
+
 implementation
 
 end.

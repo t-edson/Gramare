@@ -254,42 +254,5 @@ begin
   end;
 end;
 
-//function EsVerbo(a: cad12; var term, modo;
-//                      tiem: TTpoVerb; per: byte): boolean;
-//var
-//  b,c,d:cad12;
-//  tiempo: TTpoVerb;
-//  pers: TPersona;
-//  n:byte;
-//begin
-//  b:=a;
-//  Result := false;
-//  repeat
-//    b:=copy(b, 1, length(b)-1);
-//    if EnVerbo(b, term, n) then begin
-//      case term of
-//           1 : c:=b + 'ar';
-//           2 : c:=b + 'er';
-//           3 : c:=b + 'ir';
-//      end;
-//      for tiempo:=1 to 3 do for pers := 1 to 6 do begin
-//          d:=c;Conjugar(d, modIndicat, tiempo, pers);
-//          writeln(d);
-//          if d = a then begin
-//            modo:=1;tiem:=tiempo;
-//            per:=pers;Result:=true
-//          end;
-//      end;
-//      for tiempo:=1 to 3 do for pers := 1 to 6 do begin
-//          d:=c;Conjugar(d, modImperat,tiempo,pers) ;writeln(d);
-//          if d = a then begin
-//            modo:=3;tiem:=tiempo;
-//            per:=pers;Result:=true
-//          end;
-//      end;
-//    end;
-//  until length (b)<=2;
-//end;
-
 end.
 

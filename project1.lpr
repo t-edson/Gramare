@@ -4,25 +4,26 @@ gramaticales y estadística.
                                              Creado por Tito Hinstroza: 20/09/2021
 }
 program Gramare;
-uses crt, Classes, fgl, SysUtils,
-     Gramatica_def, grVerbo, grPreposicion, grArticulo, grPosesivo, grPronombre;
+uses crt, Classes, fgl, SysUtils, LazUTF8,
+  Gramatica_def,
+  grVerbo, grPreposicion, grArticulo, grPosesivo, grPronombre, grSustantivo;
 const
   oraciones: array[1..8] of string = (
-    'Mi abuela me cocinó fideos con estofado.',
-    'El sol saldrá a las 6.30 de la mañana.',
-    'Damián se cortó el pelo.',
-    'Mi tía fue al supermercado en el auto.',
-    'Me compré una bicicleta nueva.',
-    'Tengo turno con el dentista a las 18 h.',
-    'Mañana tenemos el campamento.',
-    'El intendente fue reelecto ayer.'
+  'Mi tía fue al supermercado en el auto.',
+  'Mi abuela me cocinó fideos con estofado.',
+  'Tengo turno con el dentista a las 18 h.',
+  'El sol saldrá a las 6.30 de la mañana.',
+  'Damián sí se cortó el pelo.',
+  'Me compré una bicicleta nueva.',
+  'Mañana tenemos el campamento.',
+  'El intendente fue reelecto ayer.'
   );
 type
   //Tipos de palabra.
   TEtiqPal = (
     epalDescon,   //Desconocido
     epalPronomb,  //Pronombre personal
-    //epalSustant,  //Sustantivo
+    epalSustant,  //Sustantivo
     epalArtic,    //Artículo
     epalPrepos,   //Preposición
     epalPoses,    //Posesivo
@@ -31,12 +32,13 @@ type
   //Signo de puntuación al final de la palabra
   TSignPunt = (
     spuNinguno,   //Ningún signo encontrado
+    spuPunto,     //No debería ser pues significaría que la oración termina.
     spuComa,      //Coma
     spuPtoComa    //Punto y coma
   );
 
   { TEtiquet }
-  //Etiqueta de palabra
+  { Etiqueta de palabra. }
   TEtiquet = object
     tipo: TEtiqPal;    //Tipo de etiqueta.
     ptos: byte;        //Puntuación de etiqueta (certeza).
@@ -45,7 +47,7 @@ type
   TEtiquets = array[0..6] of TEtiquet;  //Solo se espera hasta 6 etiquetas.
 
   { TPalabra }
-  {Modela a una palabra.}
+  { Modela a una palabra. }
   TPalabra = class
     txt      : string;    //Texto de la palabra.
     txtM     : string;    //Texto en mayúscula
@@ -94,7 +96,7 @@ begin
   case tipo of
   epalDescon : Result := '???';
   epalPronomb: Result := 'Pron. pers.';
-  //epalSustant: Result := 'Sustantivo ';
+  epalSustant: Result := 'Sustantivo';
   epalArtic  : Result := 'Artículo';
   epalPrepos : Result := 'Preposición';
   epalPoses  : Result := 'Posesivo';
@@ -102,14 +104,21 @@ begin
   else
     Result := '<error>';
   end;
+  if ptos<50 then Result := 'Posible ' + Result;
 end;
 
 { TPalabra }
 procedure TPalabra.setText(txt0: string);
 {Asigna un valor de texto al objeto.}
 begin
+  //Verifica puntuación
+  if txt0[length(txt0)] = '.' then begin
+    puntuac := spuPunto;
+    txt0 := copy(txt0, 1, length(txt0)-1);
+  end;
+  //Asigna texto
   txt := txt0;
-  txtM := UpCase(txt);
+  txtM := UTF8UpperCase(txt);
   etiqFinal.tipo := epalDescon;
   etiqFinal.ptos := 0;
 end;
@@ -147,24 +156,28 @@ var
   pronInfo: TpronInfo;
   posesInfo: TPosesInfo;
   articInfo: TArticInfo;
+  i: Integer;
 
 begin
    clrscr;
    palabras := TPalabras.Create(True);
    writeln('Analizando oraciones.');
-   //for i:= low(oraciones) to high(oraciones) do begin
-   orac := oraciones[1];
-   writeln('> ' + Utf8ToAnsi(orac) );
-   Descomponer(orac, palabras);
-   for pal in palabras do begin
-     //write( Utf8ToAnsi(pal.txt) + ',');
-     if esArticulo(pal.txtM , articInfo) then pal.agregarEtiq(epalArtic, 1);
-     if esPronombre(pal.txtM, pronInfo)  then pal.agregarEtiq(epalPronomb, 1);
-     if esPosesivo(pal.txtM , posesInfo) then pal.agregarEtiq(epalPoses, 1);
-     if esPreposicion(pal.txtM)          then pal.agregarEtiq(epalPrepos, 1);
-     writeln( Utf8ToAnsi(pal.info) );
+   for i:= low(oraciones) to high(oraciones) do begin
+     orac := oraciones[i];
+     writeln('> ' + Utf8ToAnsi(orac) );
+     Descomponer(orac, palabras);
+     for pal in palabras do begin
+       //write( Utf8ToAnsi(pal.txt) + ',');
+       if esArticulo(pal.txtM , articInfo) then pal.agregarEtiq(epalArtic  , 50);
+       if esPronombre(pal.txtM, pronInfo)  then pal.agregarEtiq(epalPronomb, 50);
+       if esPosesivo(pal.txtM , posesInfo) then pal.agregarEtiq(epalPoses  , 50);
+       if esPreposicion(pal.txtM)          then pal.agregarEtiq(epalPrepos , 50);
+       if esSustantivo(pal.txtM)           then pal.agregarEtiq(epalSustant, 80);
+       if esVerboTerm(pal.txtM)            then pal.agregarEtiq(epalVerbo  , 20);
+       writeln( Utf8ToAnsi(pal.info) );
+     end;
+     writeln('');
    end;
-   writeln('');
    ReadLn;
    palabras.Destroy;
 end.
